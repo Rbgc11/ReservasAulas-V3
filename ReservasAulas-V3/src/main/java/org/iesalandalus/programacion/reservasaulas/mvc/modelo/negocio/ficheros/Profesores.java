@@ -79,12 +79,10 @@ public class Profesores implements IProfesores {
 			//Método escribir
 			private void escribir() {
 				File dtFicherosProfesores = new File(NOMBRE_FICHEROS_PROFESORES);
-				try {
-					FileOutputStream fileOut = new FileOutputStream(dtFicherosProfesores);
-					ObjectOutputStream objOut = new ObjectOutputStream(fileOut);
-					for (Profesor profesor : coleccionProfesores)
-						objOut.writeObject(profesor);
-					objOut.close();
+				try (ObjectOutputStream salida = new ObjectOutputStream(new FileOutputStream(dtFicherosProfesores))) {
+						for (Profesor profesor : coleccionProfesores) 
+							salida.writeObject(profesor);
+							salida.close();
 				System.out.println("Fichero aulas escrito satisfactoriamente.");
 				} catch (FileNotFoundException e)  {
 					System.out.println("No se puede abrir el fichero de aulas.");	
@@ -92,6 +90,8 @@ public class Profesores implements IProfesores {
 					System.out.println("Error inesperado.");	
 				}
 			}
+			
+			
 	// Método setProfesores(Profesores)
 	private void setProfesores(IProfesores profesores) {
 		if (profesores == null) {
@@ -135,19 +135,20 @@ public class Profesores implements IProfesores {
 
 	// Método buscar
 	public Profesor buscar(Profesor profesor) {
-		if (profesor == null) {
-			throw new NullPointerException(" No se puede buscar un profesor nulo.");
+		if(profesor == null) {
+			throw new NullPointerException("ERROR: No se puede buscar un profesor nulo.");
+		} else if(coleccionProfesores.isEmpty()) {
+			return null;
 		}
-		Profesor profesorEncontrado = null;
+		
 		int indice = coleccionProfesores.indexOf(profesor);
-		if (indice == -1) {
-			profesorEncontrado = null;
+		
+		if(coleccionProfesores.contains(profesor)) {
+		  	return new Profesor(coleccionProfesores.get(indice));
 		} else {
-			profesorEncontrado = new Profesor(coleccionProfesores.get(indice));
+			return null;
 		}
-		return profesorEncontrado;
 	}
-
 	// Método borrar
 	public void borrar(Profesor profesor) throws OperationNotSupportedException {
 		if (profesor == null) {
@@ -161,7 +162,7 @@ public class Profesores implements IProfesores {
 
 	// Metodo representar
 	public List<String> representar() {
-		List<String> representacion = new ArrayList<String>();
+		List<String> representacion = new ArrayList<>();
 		Iterator<Profesor> iterador = coleccionProfesores.iterator();
 		while (iterador.hasNext()) {
 			representacion.add(iterador.next().toString());

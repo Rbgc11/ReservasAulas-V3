@@ -20,8 +20,8 @@ import org.iesalandalus.programacion.reservasaulas.mvc.modelo.negocio.IReservas;
 
 public class Reservas implements IReservas{
 	// Atributos
-	private static final float MAX_PUNTOS_PROFESOR_MES = 150.0f;
-	private List<Reserva> coleccionReservas = new ArrayList<>();
+	private static final float MAX_PUNTOS_PROFESOR_MES = 200f;
+	private List<Reserva> coleccionReservas;
 
 	// Constructor por defecto
 	public Reservas() {
@@ -92,7 +92,7 @@ public class Reservas implements IReservas{
 				throw new OperationNotSupportedException(
 						" Sólo se pueden hacer reservas para el mes que viene o posteriores.");
 			}
-			if (getPuntosGastadosReserva(reserva) > MAX_PUNTOS_PROFESOR_MES) {
+			if ((getPuntosGastadosReserva(reserva) + reserva.getPuntos()) > MAX_PUNTOS_PROFESOR_MES) {
 				throw new OperationNotSupportedException(
 						" Esta reserva supera los puntos máximos por mes para dicho profesor.");
 			}
@@ -252,32 +252,26 @@ public class Reservas implements IReservas{
 	}
 
 	// Método consultarDisponibilidad(Aula,Permanencia)
+	@Override
 	public boolean consultarDisponibilidad(Aula aula, Permanencia permanencia) {
 		if (aula == null) {
-			throw new NullPointerException("No se puede consultar la disponibilidad de un aula nula.");
-		} else if (permanencia == null) {
-			throw new NullPointerException("No se puede consultar la disponibilidad de una permanencia nula.");
+			throw new NullPointerException("ERROR: No se puede consultar la disponibilidad de un aula nula.");
 		}
+
+		if (permanencia == null) {
+			throw new NullPointerException("ERROR: No se puede consultar la disponibilidad de una permanencia nula.");
+		}
+
 		boolean disponibilidad = true;
+
 		Iterator<Reserva> iterador = coleccionReservas.iterator();
 		while (iterador.hasNext()) {
-			Reserva reserva = iterador.next();
-			if (!esMesSiguienteOPosterior(Reserva.getReservaFicticia(aula, permanencia))) {
+			Reserva comprobar = iterador.next();
+			if (permanencia.equals(comprobar.getPermanencia()) && aula.equals(comprobar.getAula())) {
 				disponibilidad = false;
-			} else if (aula.equals(reserva.getAula()) && permanencia.getDia().equals(reserva.getPermanencia().getDia())) {
-				if ((permanencia instanceof PermanenciaPorHora && reserva.getPermanencia() instanceof PermanenciaPorTramo)|| (permanencia instanceof PermanenciaPorTramo && reserva.getPermanencia() instanceof PermanenciaPorHora)) {
-					disponibilidad = false;
-				} else if (permanencia instanceof PermanenciaPorHora && reserva.getPermanencia() instanceof PermanenciaPorHora) {
-					if (((PermanenciaPorHora) permanencia).getHora().equals(((PermanenciaPorHora) reserva.getPermanencia()).getHora())) {
-						disponibilidad = false;
-					}
-				} else if (permanencia instanceof PermanenciaPorTramo&& reserva.getPermanencia() instanceof PermanenciaPorTramo) {
-					if (((PermanenciaPorTramo) permanencia).getTramo().equals(((PermanenciaPorTramo) reserva.getPermanencia()).getTramo())) {
-						disponibilidad = false;
-					}
-				}
 			}
 		}
+
 		return disponibilidad;
 	}
 	@Override

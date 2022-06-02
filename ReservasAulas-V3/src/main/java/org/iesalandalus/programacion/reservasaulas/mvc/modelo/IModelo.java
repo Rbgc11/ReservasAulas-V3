@@ -17,7 +17,7 @@ public interface IModelo {
 	public void terminar();
 	
 	//Método getAulas
-	List<Aula> getAulas(Aula aula);
+	List<Aula> getAulas();
 
 
 	//Método getNumAulas

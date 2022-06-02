@@ -1,5 +1,6 @@
 	package org.iesalandalus.programacion.reservasaulas.mvc.vista;
 
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -41,7 +42,7 @@ public class Consola {
 
 	    //Método elegirOpcion
 	    public static int elegirOpcion() {
-	            int ordinalOpcion;
+	            int ordinalOpcion = 0;
 	                
 	            do {
 	                    System.out.print("Escoge una opción: ");
@@ -66,21 +67,16 @@ public class Consola {
 
 		// Método leerAulaFicticia
 		public static Aula leerAulaFicticia() {
-			System.out.println("Introduce el nombre del aula: ");
-			return Aula.getAulaFicticia(Entrada.cadena());
-
+			Aula aula = Aula.getAulaFicticia(leerNombreAula());
+			return aula;
 		}
 	    
 	    //Método leerNombreAula
-	    public static String leerNombreAula(){
-	    	String nombreAula = null;
-	        do{
-	            System.out.println("Introduce el nombre del aula");
-	            nombreAula=Entrada.cadena();
-	        }while(nombreAula==null||nombreAula.trim().equals (""));
-	        return nombreAula;
-	    }
-
+		public static String leerNombreAula() {
+			System.out.print("Introduzca el nombre del aula: ");
+			return Entrada.cadena();
+		}
+		
 	    //Método leerProfesor
 	    public static Profesor leerProfesor(){
 
@@ -91,7 +87,7 @@ public class Consola {
 	        String telefono = Entrada.cadena();
 	        
 	        
-	        if(telefono==null || telefono.trim().equals("")){
+			if(telefono == null || telefono == "") {
 	        	return new Profesor(leerNombreProfesor(), correo);
 	        }else{
 	        	return new Profesor(leerNombreProfesor(), correo, telefono);
@@ -110,42 +106,45 @@ public class Consola {
 
 		public static Profesor leerProfesorFicticio() {
 			System.out.println("Introduzca el correo del profesor");
-			return Profesor.getProfesorFicticio(Entrada.cadena());
+			String correo = Entrada.cadena();
+			Profesor profesor = Profesor.getProfesorFicticio(correo);
+			return profesor;
 		}
 
 	    
 	    //Método leerTramo
-	    public static Tramo leerTramo(){
-	        int numero= 0;
-	     do{
-	        System.out.println("Elige tramo horario: 1=Por la mañana y 2 = Por la tarde");
-	        numero=Entrada.entero();
-	     }while(numero!=1&&numero!=2);
-	     
-	        if(numero==1){
-	            return Tramo.MANANA;
-	        }
-	        if(numero==2){
-	        
-	            return Tramo.TARDE;
-	        }
-	        return null;
-	    }
+		public static Tramo leerTramo() {
+			System.out.println("Eliga un tramo insertando 1 (Mañana) o 2 (Tarde): ");
+			int indice = Entrada.entero();
+			switch (indice) {
+			case 1:
+				return Tramo.MANANA;
+
+			case 2:
+				return Tramo.TARDE;
+
+			default:
+				return null;
+			}
+		}
 	   
 	    //Método leerDia
-	    public static LocalDate leerDia(){
-	     LocalDate dia=null;
-	     System.out.println("Introduce una fecha con el formato dd/mm/aaaa: ");
-	        	try {
-	        			 dia=LocalDate.parse(Entrada.cadena(), FORMATO_DIA);
-	        			 
-	        	}catch (DateTimeParseException e) {
-					System.out.println("Formato incorrecto");
+		public static LocalDate leerDia() {
+			boolean fechaCorrecta = false;
+			LocalDate fecha = null;
+			
+			do {
+				try {
+					System.out.print("Introduzca la fecha (dd/mm/aaaa): ");
+					fecha = LocalDate.parse(Entrada.cadena(), FORMATO_DIA);
+					fechaCorrecta = true;
+				} catch(DateTimeParseException e) {
+					System.out.println(e.getMessage());
 				}
-
-
-	        return dia;
-	    }
+			} while(!fechaCorrecta);
+			
+			return fecha;
+		}
 	    
 	 // Método elegirPermanencia
 		public static int elegirPermanencia() {
@@ -178,19 +177,19 @@ public class Consola {
 		
 		//Método leerHora
 		private static LocalTime leerHora() {
+			boolean horaCorrecta = false;
 			LocalTime hora = null;
-			boolean problema = false;
+			
 			do {
 				try {
-					System.out.println("Introduzca una hora con el formato hh:00)");
-					String horaIntroducida = Entrada.cadena();
-					hora = LocalTime.parse(horaIntroducida);
-					problema = false;
-				} catch (DateTimeParseException e) {
-					System.out.println(" Formato incorrecto");
-					problema = true;
+					System.out.print("Introduzca la hora (8 - 22): ");
+					hora = LocalTime.of(Entrada.entero(), 0);
+					horaCorrecta = true;
+				} catch(DateTimeException e) {
+					System.out.println(e.getMessage());
 				}
-			} while (problema == true);
+			} while(!horaCorrecta);
+			
 			return hora;
 		}
 

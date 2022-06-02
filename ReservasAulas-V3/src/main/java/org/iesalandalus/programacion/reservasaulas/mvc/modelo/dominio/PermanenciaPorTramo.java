@@ -56,6 +56,8 @@ public class PermanenciaPorTramo extends Permanencia implements Comparable<Perma
 	public String toString() {
 		return super.toString() + ", tramo=" + tramo;
 		}
+	
+	
 	@Override
 	public int compareTo(Permanencia otraPermanencia) {
 		return this.getDia().compareTo(otraPermanencia.getDia());

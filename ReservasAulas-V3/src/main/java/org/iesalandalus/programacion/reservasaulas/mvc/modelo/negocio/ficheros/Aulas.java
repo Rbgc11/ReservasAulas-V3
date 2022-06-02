@@ -44,27 +44,23 @@ public class Aulas implements IAulas{
 		
 		//Método leer
 		private void leer() {
-			File dtficherosaulas = new File(NOMBRE_FICHEROS_AULAS); //creación fichero
-			try {
-			ObjectInputStream objIn = new ObjectInputStream(new FileInputStream(dtficherosaulas));
+			File ficherosAulas = new File(NOMBRE_FICHEROS_AULAS);
+			try {ObjectInputStream entrada = new ObjectInputStream(new FileInputStream(ficherosAulas));
 			Aula aula = null;
-				do {
-					// se asigna el profesor que viene del string
-					aula = (Aula) objIn.readObject();
-					if (aula!=null) {
-						insertar(aula);
-					}
-				}while(aula != null);	
-				objIn.close();
-				// ordención de los catch para evitar errores
+			do {
+				aula = (Aula) entrada.readObject();
+				insertar(aula);
+			}while(aula != null);
+			entrada.close();
+				
 			} catch (ClassNotFoundException e)  {
-				System.out.println("No se puede encontrar la clase para leer.");	
+				System.out.println("ERROR: No puedo encontrar la clase que tengo que leer.");	
 			} catch (FileNotFoundException e)  {
-				System.out.println("No se puede abrir el fichero de aulas.");	
+				System.out.println("ERROR: No puedo abrir el fichero de aulas.");	
 			} catch (EOFException e)  {
 				System.out.println("Fichero aulas leído satisfactoriamente.");	
 			} catch (IOException e)  {
-				System.out.println("Error inesperado.");	
+				System.out.println("ERROR inesperado de Entrada/Salida.");	
 			} catch (OperationNotSupportedException e)  {
 				System.out.println(e.getMessage());	
 			}
@@ -77,32 +73,32 @@ public class Aulas implements IAulas{
 		
 		//Método escribir
 		private void escribir() {
-			File dtficherosaulas = new File(NOMBRE_FICHEROS_AULAS);
-			try {
-				FileOutputStream fileOut=new FileOutputStream(dtficherosaulas);
-				ObjectOutputStream objOut=new ObjectOutputStream(fileOut);
-				for (Aula aula : coleccionAulas)
-					objOut.writeObject(aula);
-				objOut.close();
-			System.out.println("Fichero aulas creado satisfactoriamente.");
-			} catch (FileNotFoundException e)  {
-				System.out.println("No se puede abrir el fichero de aulas.");	
-			} catch (IOException e)  {
-				System.out.println("Error inesperado.");	
+			File ficherosAulas = new File(NOMBRE_FICHEROS_AULAS);
+			
+			try (ObjectOutputStream salida = new ObjectOutputStream(new FileOutputStream(ficherosAulas))) {
+				for (Aula aula : coleccionAulas) {
+					salida.writeObject(aula);
+				}
+			} catch (FileNotFoundException e) {
+				System.out.println("ERROR: No se pudo crear el fichero.");
+			} catch (IOException e) {
+				System.out.println("Error de Entrada/Salida.");
+			}
+		}
+		// Método setAulas
+		private void setAulas(IAulas aulas) {
+			if(aulas == null) {
+				throw new NullPointerException("ERROR: No se puede establecer aulas nulas.");
+			} else {
+				coleccionAulas = aulas.getAulas();
 			}
 		}
 		
-		// Método setAulas
-		private void setAulas(IAulas aulas) {
-			if (aulas == null) {
-				throw new NullPointerException("No se puede copiar un aula nula.");
-			} else {
-				this.coleccionAulas = aulas.getAulas();
-			}
-		}
 		// Método getAulas		
 		public List<Aula> getAulas() {
-			return copiaProfundaAulas(coleccionAulas);
+			List<Aula> lista = copiaProfundaAulas(coleccionAulas);
+			lista.sort(Comparator.comparing(Aula::getNombre));
+			return lista;
 		}
 
 	    
@@ -124,31 +120,33 @@ public class Aulas implements IAulas{
 	    
 
 		// Método insertar
-		public void insertar(Aula aula) throws OperationNotSupportedException {
+		@Override
+		public void insertar (Aula aula) throws OperationNotSupportedException {
 			if (aula == null) {
-				throw new NullPointerException(" No se puede insertar un aula nula.");
-			} else if (!coleccionAulas.contains(aula)) {
-				coleccionAulas.add(new Aula(aula));
+				throw new NullPointerException("ERROR: No se puede insertar un aula nula.");
+			}
+			if (coleccionAulas.contains(aula)) {
+				throw new OperationNotSupportedException("ERROR: Ya existe un aula con ese nombre.");
 			} else {
-				throw new OperationNotSupportedException(" Ya existe un aula con ese nombre.");
+				coleccionAulas.add(new Aula(aula));
 			}
 		}
 	    
 	   
 		// Método buscar
 		public Aula buscar(Aula aula) {
-			if (aula == null) {
-				throw new NullPointerException("No se puede buscar un aula nula.");
+			if(aula == null) {
+				throw new NullPointerException("ERROR: No se puede buscar un aula nula.");
+			} else if(coleccionAulas.isEmpty()) {
+				return null;
 			}
-			// Se mira si hay un Aula que existe en coleccionAulas
-			Aula aulaEncontrada = null;
+			
 			int indice = coleccionAulas.indexOf(aula);
-			if (indice == -1) {
-				aulaEncontrada = null;
-			} else {
-				aulaEncontrada = new Aula(coleccionAulas.get(indice));
-			}
-			return aulaEncontrada;
+			
+			if(coleccionAulas.contains(aula)) {
+			  	return new Aula(coleccionAulas.get(indice));
+			} 
+			return null;		
 		}
 	    
 		// Método borrar

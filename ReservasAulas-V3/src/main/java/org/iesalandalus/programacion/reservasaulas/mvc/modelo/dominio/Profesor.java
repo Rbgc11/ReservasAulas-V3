@@ -24,7 +24,7 @@ public class Profesor implements Serializable {
     //Constructor Copia
     public Profesor (Profesor profesor) {
         if (profesor == null) {
-			throw new NullPointerException("No se puede copiar un profesor nulo.");
+			throw new NullPointerException("ERROR: No se puede copiar un profesor nulo.");
 		} else {
 		setNombre(profesor.getNombre());
 		setTelefono(profesor.getTelefono());
@@ -35,51 +35,53 @@ public class Profesor implements Serializable {
     //Set y Get de los atributos. El set usa el formateaNombre
     private void setNombre(String nombre) {        
         if(nombre==null){       
-            throw new NullPointerException("El nombre del profesor no puede ser nulo.");
+            throw new NullPointerException("ERROR: El nombre del profesor no puede ser nulo.");
         }
         else if(nombre.trim() .equals("")){        
-            throw new IllegalArgumentException("El nombre del profesor no puede estar vacío.");       
-        }
+            throw new IllegalArgumentException("ERROR: El nombre del profesor no puede estar vacío.");       
+        } else {
             this.nombre = formateaNombre(nombre);
+        }
     }
     
  
   //Método formateaNombre
-  		private String formateaNombre(String nombre) {
-  			nombre = nombre.trim().replaceAll("\\s{2,}", " ").toLowerCase();
-  			String [] formatea = nombre.split(" ");
-  			String Nombre2 = "";
-  			for (int i=0; i<=formatea.length-1; i++) {
-  				formatea[i] = formatea[i].substring(0,1).toUpperCase() + formatea[i].substring(1).toLowerCase();
-  				Nombre2 = Nombre2 + formatea[i] + " ";
-  			}
-  			nombre = Nombre2.trim();
-  			return nombre;
-  		}
+	private String formateaNombre(String nombre) {
+		nombre = nombre.replaceAll("\\s{2,}", " ").trim();
+		String [] palabras = nombre.split(" ");
+		String nombre2 = "";
+		for (int i=0; i<=palabras.length-1; i++) {
+			palabras[i] = palabras[i].substring(0,1).toUpperCase() + palabras[i].substring(1).toLowerCase();
+			nombre2 = nombre2 + palabras[i] + " ";
+		}
+		nombre = nombre2.trim();
+		return nombre;
+	}
 
 
     
     //Set de Correo
     public void setCorreo(String correo) {       
         if(correo==null){
-            throw new NullPointerException("El correo del profesor no puede ser nulo.");      
+            throw new NullPointerException("ERROR: El correo del profesor no puede ser nulo.");      
         }
-        if(correo.trim().equals("") || !correo.matches(ER_CORREO)){        
-            throw new IllegalArgumentException("El correo del profesor no es válido.");         
+        else if(correo.trim().equals("") || !correo.matches(ER_CORREO)){        
+            throw new IllegalArgumentException("ERROR: El correo del profesor no es válido.");         
+        } else {
+            this.correo=correo; 
         }
-            this.correo=correo;        
     }
     
     //Set de Telefono
 	public void setTelefono(String telefono){
 		if (telefono == null) {
-			this.telefono = null;
+			this.telefono = telefono;
 		} 
 		else if (telefono.trim().equals("") || !telefono.matches(ER_TELEFONO)) {
-		      throw new IllegalArgumentException("El teléfono del profesor no es válido.");
-		    }
-
+		      throw new IllegalArgumentException("ERROR: El teléfono del profesor no es válido.");
+		    } else {
 		    this.telefono = telefono;
+		    }
 		  }
 
     public String getNombre() {
@@ -99,38 +101,30 @@ public class Profesor implements Serializable {
     }
     
     //Método getProfesorFicticio
-  	public static Profesor getProfesorFicticio (String correo) {
-  		Profesor profesor=new Profesor("Profesor",correo,"678909876");
-  		return new Profesor(profesor);
-  	}
+	public static Profesor getProfesorFicticio(String correo) {
+		Profesor profesor = new Profesor("Profesor", correo);
+		return new Profesor(profesor);
+	}
 	@Override
 	public int hashCode() {
-		return Objects.hash(correo, nombre, telefono);
+		return Objects.hash(correo);
 	}
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!(obj instanceof Profesor))
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
 			return false;
 		Profesor other = (Profesor) obj;
 		return Objects.equals(correo, other.correo);
 	}
 
+	// Método toString que muestra el teléfono, el nombre y el correo del profesor.
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("nombre=");
-		sb.append(this.nombre);
-		sb.append(", correo=");
-		sb.append(this.correo);
-		if (this.telefono !=null) {
-			sb.append(", teléfono=");
-			sb.append(this.telefono);
-		}
-		return sb.toString();
+		String ponerTelefono = (telefono == null) ? "" : ", teléfono=" + telefono; 
+		return "nombre=" + nombre + ", correo=" + correo + ponerTelefono;
 	}
-
 }
-
-

@@ -21,13 +21,8 @@ public class PermanenciaPorHora  extends Permanencia implements Comparable<Perma
 //	Constructor copia 
 	public PermanenciaPorHora(PermanenciaPorHora permanencia) {
 		super(permanencia);
-		if (permanencia == null) {
-			throw new NullPointerException (" No se puede copiar una permanencia nula.");
-		} else {
 		setHora(permanencia.getHora());
 		}
-	}
-
 
 //	Getters y setters
 	public LocalTime getHora() {
@@ -36,13 +31,14 @@ public class PermanenciaPorHora  extends Permanencia implements Comparable<Perma
 
 	private void setHora(LocalTime hora) {
 		if (hora == null) {
-			throw new NullPointerException(" La hora de una permanencia no puede ser nula.");
+			throw new NullPointerException(" ERROR: La hora de una permanencia no puede ser nula.");
 		} else if (hora.isBefore(HORA_INICIO) || hora.isAfter(HORA_FIN)) {
-			throw new IllegalArgumentException("La hora de una permanencia no es válida.");
+			throw new IllegalArgumentException("ERROR: La hora de una permanencia no es válida.");
 		} else if (hora.getMinute() != 0) {
-			throw new IllegalArgumentException(" La hora de una permanencia debe ser una hora en punto.");
-		}
+			throw new IllegalArgumentException(" ERROR: La hora de una permanencia debe ser una hora en punto.");
+		} else {
 		this.hora = hora;
+		}
 	}
 
 
@@ -54,7 +50,7 @@ public class PermanenciaPorHora  extends Permanencia implements Comparable<Perma
 //	Métodos hashChode y equals
 	@Override
 	public int hashCode() {
-		return Objects.hash(hora);
+		return Objects.hash(getDia(), hora);
 	}
 
 	@Override

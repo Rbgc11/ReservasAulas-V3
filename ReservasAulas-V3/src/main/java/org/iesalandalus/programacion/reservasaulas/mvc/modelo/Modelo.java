@@ -41,7 +41,7 @@ import javax.naming.OperationNotSupportedException;
 			}
 			
 			@Override
-			public List<Aula> getAulas(Aula aula) {
+			public List<Aula> getAulas() {
 				return aulas.getAulas();
 		    }
 			@Override

@@ -5,7 +5,7 @@ public enum Tramo {
 	private String cadenaAMostrar;
 
 	
-	Tramo(String cadenaAMostrar) {
+	private Tramo(String cadenaAMostrar) {
 		this.cadenaAMostrar = cadenaAMostrar;
 	}
 

@@ -14,9 +14,7 @@ import org.iesalandalus.programacion.reservasaulas.mvc.modelo.dominio.Permanenci
 
 
 public class Vista implements IVista {
-   	private static final String ERROR = "ERROR";
-    private static final String NOMBRE_VALIDO= "Nombre válido";
-	private static final String CORREO_VALIDO="Correo válido";
+
 	private IControlador Icontrolador;
 
 	public Vista() {
@@ -73,15 +71,16 @@ public class Vista implements IVista {
 	//Método buscarAula
 	public void buscarAula() {
 		Consola.mostrarCabecera("Buscar aula");
-		Aula aula;
+		Aula aula = null;
 		try {
-			aula = Icontrolador.buscarAula( Consola.leerAula());
+			aula = Consola.leerAula();
+			aula = Icontrolador.buscarAula(aula);
 			if (aula != null) {
-				System.out.println("El aula buscada es: " + aula);
+				System.out.println("El aula buscado es: " + aula);
 			} else {
-				System.out.println("No existe ninguna aula con dicho nombre.");
+				System.out.println("No existe ningún aula con ese nombre");
 			}
-		} catch (IllegalArgumentException | NullPointerException e){
+		} catch (IllegalArgumentException e) {
 			System.out.println(e.getMessage());
 		}
 	}
@@ -91,29 +90,23 @@ public class Vista implements IVista {
 		Consola.mostrarCabecera("Listar aulas");
 		List<String> aulas = Icontrolador.representarAulas();
 		if (aulas.size() != 0) {
-			for (Iterator<String> iterador = aulas.iterator(); iterador.hasNext();) {
-				System.out.println(iterador.next().toString());
+			for (String aula : aulas) {
+				System.out.println(aula);
 			}
 		} else {
 			System.out.println("No hay aulas que listar.");
 		}
 	}
+
 	
 	//Método insertarProfesor
 	public void insertarProfesor() {
-		Consola.mostrarCabecera("Insertar profesor");
+		Consola.mostrarCabecera("Insertar un profesor");
+		
 		try {
-			Profesor profesor = Consola.leerProfesor();
-			Icontrolador.insertarProfesor(profesor);
-                        if (profesor.getNombre()!=null){
-			System.out.println(NOMBRE_VALIDO);
-                        }
-                        if (profesor.getCorreo()!=null){
-                            System.out.println(CORREO_VALIDO);
-                			System.out.println("El profesor se ha insertado correctamente");
-                            }
-                        
-		} catch (OperationNotSupportedException|IllegalArgumentException e) {
+			Icontrolador.insertarProfesor(Consola.leerProfesor());
+			System.out.println("Se ha insertado el profesor.\n");
+		} catch (OperationNotSupportedException | NullPointerException | IllegalArgumentException e) {
 			System.out.println(e.getMessage());
 		}
 	}
@@ -132,7 +125,6 @@ public class Vista implements IVista {
 	//Método buscarProfesor
 	public void buscarProfesor() {
 		Consola.mostrarCabecera("Buscar profesor");
-		List<String> listaprofesores = Icontrolador.representarProfesores();
 		Profesor profesor = null;
 		try {
 			profesor = Consola.leerProfesor();
@@ -231,7 +223,7 @@ public class Vista implements IVista {
             Consola.mostrarCabecera("Listar reservas profesor");
     		Profesor profesor = Consola.leerProfesor();
                
-            List<Reserva> reservasProfesor = Icontrolador.getReservasProfesor(profesor);
+    		List<Reserva> reservasProfesor = Icontrolador.getReservasProfesor(Consola.leerProfesorFicticio());
             if (reservasProfesor.size() != 0) {
             	for (Iterator<Reserva> iterador = reservasProfesor.iterator(); iterador.hasNext();) {
     				Reserva reserva = iterador.next();
@@ -248,27 +240,27 @@ public class Vista implements IVista {
                             
                     
     	//Método consultarDisponibilidad
+    	// Método consultarDisponibilidad
     	public void consultarDisponibilidad() {
     		Consola.mostrarCabecera("Consultar disponibilidad");
-    		boolean disponibilidad = true;
-    		Permanencia permanencia = null;
-    		Aula aula = null;
     		try {
-    			permanencia = Consola.leerPermanencia();
-    			aula = Consola.leerAulaFicticia();
-    			disponibilidad = Icontrolador.consultarDisponibilidad(aula, permanencia);
-    		} catch (NullPointerException | IllegalArgumentException e) {
+    			Permanencia permanencia = Consola.leerPermanencia();
+    			Aula aulaBuscar = Icontrolador.buscarAula(Consola.leerAula());
+    			if (aulaBuscar == null) {
+    				System.out.println("El aula introducida no existe.");
+    			} else {
+    				if (Icontrolador.consultarDisponibilidad(aulaBuscar, permanencia)) {
+    					System.out.println("El aula está disponible.");
+    				} else {
+    					System.out.println("El aula ya está reservada.");
+    				}
+    			}
+    		} catch (NullPointerException e) {
+    			System.out.println(e.getMessage());
+    		} catch (IllegalArgumentException e) {
     			System.out.println(e.getMessage());
     		}
-    		if (Icontrolador.buscarAula(aula) == null) {
-    			System.out.println("El aula introducida no existe");
-    		} 
-    		else if (disponibilidad == true) {
-    			System.out.println("El aula se encuentra disponible para la permanencia y día introducidos.");
-    		} else {
-    			System.out.println("El aula no se encuentra disponible para la permanencia y día introducidos.");
-    		}
     	}
- 
-}
+
+    }
 

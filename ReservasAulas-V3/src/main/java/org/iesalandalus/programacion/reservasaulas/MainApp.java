@@ -14,30 +14,11 @@ import org.iesalandalus.programacion.utilidades.Entrada;
 public class MainApp {
 
 	public static void main(String[] args) {
-		int opcion=0;
-		IModelo modelo=null;
-		IVista vista=null;
-		IControlador controlador=null;
-		System.out.println("Programa para la gestión de reservas de espacios del IES Al-Ándalus. Introduce lo que prefieras");
-		do {
-			System.out.println("1: Memoria");
-			System.out.println("2: Ficheros");
-			opcion=Entrada.entero();
-		} while (opcion != 1 && opcion != 2);
-		
-		switch(opcion) {
-		case 1:
-			modelo=new Modelo(FactoriaFuenteDatos.MEMORIA.crear());
-			vista=new Vista();
-			controlador=new Controlador(modelo,vista);
-			controlador.comenzar();	
-			break;
-		case 2:
-			modelo=new Modelo(FactoriaFuenteDatos.FICHEROS.crear());
-			vista=new Vista();
-			controlador=new Controlador(modelo,vista);
-			controlador.comenzar();	
-			break;
-		}
-} 
+		System.out.println("Programa para la gestión de reservas de espacios del IES Al-Ándalus desde memoria");
+		IModelo modelo = new Modelo(FactoriaFuenteDatos.MEMORIA.crear());
+		//IModelo modelo = new Modelo(FactoriaFuenteDatos.FICHEROS.crear());
+		IVista vista = new Vista();
+		IControlador controlador = new Controlador(modelo, vista);
+		controlador.comenzar();
+	} 
 }

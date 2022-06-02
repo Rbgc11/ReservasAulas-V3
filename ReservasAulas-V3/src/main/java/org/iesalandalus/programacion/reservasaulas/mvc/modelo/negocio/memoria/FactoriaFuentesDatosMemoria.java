@@ -9,19 +9,18 @@ import org.iesalandalus.programacion.reservasaulas.mvc.modelo.IFuenteDatos;
 public class FactoriaFuentesDatosMemoria implements IFuenteDatos {
 	public FactoriaFuentesDatosMemoria() {
 	}
-	
+	@Override
 	public IAulas crearAulas() {
-		IAulas aulas=(IAulas) new Aulas();
-		return aulas;
+		return new Aulas();
 	}
-	
+
+	@Override
 	public IProfesores crearProfesores() {
-		IProfesores profesores=(IProfesores) new Profesores();
-		return profesores;
+		return new Profesores();
 	}
-	
+
+	@Override
 	public IReservas crearReservas() {
-		IReservas reservas=(IReservas) new Reservas();
-		return reservas;
+		return new Reservas();
 	}
 }
